@@ -1,0 +1,9 @@
+isort
+pytest
+pytest-mock
+pytest-cov
+pytest-cache
+coverage
+flake8
+mypy
+mypy-extensions
