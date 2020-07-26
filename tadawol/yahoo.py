@@ -25,16 +25,23 @@ def get_stock_data(ticker: str, start_date: datetime) -> pd.DataFrame:
     fetcher = Fetcher(
         ticker=ticker,
         start=[start_date.year, start_date.month, start_date.day],
-        end=[end_date.year, end_date.month, end_date.day]
+        end=[end_date.year, end_date.month, end_date.day],
     )
     data = fetcher.get_historical()
     data['Ticker'] = ticker
+    data.drop_duplicates(subset=["Date"], inplace=True)
     return data
 
 
 def get_tickers() -> Set[str]:
     df = pd.read_csv(TICKERS_LIST_PATH)
     return set(df['Ticker'])
+
+
+def get_history() -> pd.DataFrame:
+    df = pd.read_csv(STOCKS_HISTORY_PATH)
+    df['Date'] = df['Date'] = pd.to_datetime(df['Date'])
+    return df
 
 
 def get_last_update_date_per_ticker() -> Dict[str, datetime]:
@@ -47,7 +54,6 @@ def get_last_update_date_per_ticker() -> Dict[str, datetime]:
         if ticker in tickers:
             last_date = max(ticker_data['Date'])
             start_date_per_ticker[ticker] = last_date + timedelta(days=1)
-
     for ticker in tickers:
         if ticker not in start_date_per_ticker:
             start_date_per_ticker[ticker] = DEFAULT_START_DATE
@@ -57,7 +63,6 @@ def get_last_update_date_per_ticker() -> Dict[str, datetime]:
 
 def update_data():
     start_date_per_ticker = get_last_update_date_per_ticker()
-
     logger.info("Fetching data for {} tickers".format(len(start_date_per_ticker)))
 
     failed_tickers = []
@@ -82,7 +87,6 @@ def update_data():
         try:
             current_tickers_number += 1
             ticker_data = get_stock_data(ticker, start_date)
-
         except KeyboardInterrupt as e:
             logging.info('Interrupted by user')
             raise e
@@ -109,13 +113,12 @@ def update_data():
 
 
 def check_data():
-    df = pd.read_csv(STOCKS_HISTORY_PATH)
-    df['Date'] = df['Date'] = pd.to_datetime(df['Date'])
+    df = get_history()
 
     tickers_number = df['Ticker'].nunique()
     logger.info(f'Tickers number = {tickers_number}')
     for ticker, ticker_data in df.groupby(["Ticker"]):
-
+        logger.info(f"Checking {ticker} ...")
         rows_number = ticker_data.shape[0]
         dates_number = ticker_data['Date'].nunique()
         if rows_number != dates_number:
@@ -125,10 +128,21 @@ def check_data():
         ticker_data['date_diff'] = df['Date'] - df['Date'].shift(1)
         ticker_data = ticker_data[1:]
         if ticker_data['date_diff'].max().days > 5:
-            raise Exception(f"{ticker}: Difference more than 5 days")
+            raise Exception(f"{ticker}: Max difference more than 5 days")
+        if ticker_data['date_diff'].min().days != 1:
+            raise Exception(f"{ticker}: Min difference  less than 1 day")
 
     logger.info("Data is good !")
 
 
+def delete_date():
+
+    historical_data = get_history()
+    before = historical_data.shape[0]
+    historical_data = historical_data[historical_data["Date"] != datetime(2020, 7, 24)]
+    after = historical_data.shape[0]
+    historical_data.to_csv(STOCKS_HISTORY_PATH)
+
+
 if __name__ == '__main__':
-    check_data()
+    update_data()
