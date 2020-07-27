@@ -4,14 +4,14 @@ import pandas as pd
 
 def add_ema(df: pd.DataFrame, window:int, column:str="Close") -> Tuple[pd.DataFrame, str]:
     column_name = f"{column}_ema_{window}"
-    df[column_name] = df[column].ewm(span=window).mean()
+    df.loc[:, column_name] = df[column].ewm(span=window).mean()
 
     return df, column_name
 
 
-def add_sma(df: pd.DataFrame, window:int, column:str="Close") -> Tuple[pd.DataFrame, str]:
+def add_sma(df: pd.DataFrame, window: int, column: str = "Close") -> Tuple[pd.DataFrame, str]:
     column_name = f"{column}_sma_{window}"
-    df[column_name] = df[column].rolling(window=window).mean()
+    df.loc[:, column_name] = df[column].rolling(window=window).mean()
 
     return df, column_name
 
@@ -29,6 +29,6 @@ def add_macd(
     diff = fast_ema - slow_ema
     diff_ema = (fast_ema - slow_ema).ewm(span=signal_smoothing).mean()
     column_name = f"{column}_MACD_{fast_length}_{slow_length}_diff"
-    df[column_name] = diff - diff_ema
+    df.loc[:, column_name] = diff - diff_ema
     return df, column_name
 

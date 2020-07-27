@@ -38,16 +38,17 @@ def get_tickers() -> Set[str]:
     return set(df['Ticker'])
 
 
-def get_history() -> pd.DataFrame:
+def get_historical_data() -> pd.DataFrame:
     df = pd.read_csv(STOCKS_HISTORY_PATH)
-    df['Date'] = df['Date'] = pd.to_datetime(df['Date'])
+    df.loc[:, 'Date'] = pd.to_datetime(df['Date'], format="%Y-%m-%d")
+    df = df[df["Date"] > datetime(2018, 7, 20)]
+    logger.info("Historical data is extracted, rows_umber = {}".format(df.shape[0]))
     return df
 
 
 def get_last_update_date_per_ticker() -> Dict[str, datetime]:
     tickers = get_tickers()
-    historical_data = pd.read_csv(STOCKS_HISTORY_PATH)
-    historical_data['Date'] = pd.to_datetime(historical_data['Date'])
+    historical_data = get_historical_data()
 
     start_date_per_ticker = {}
     for ticker, ticker_data in historical_data.groupby(['Ticker']):
@@ -113,7 +114,7 @@ def update_data():
 
 
 def check_data():
-    df = get_history()
+    df = get_historical_data()
 
     tickers_number = df['Ticker'].nunique()
     logger.info(f'Tickers number = {tickers_number}')
@@ -137,7 +138,7 @@ def check_data():
 
 def delete_date():
 
-    historical_data = get_history()
+    historical_data = get_historical_data()
     before = historical_data.shape[0]
     historical_data = historical_data[historical_data["Date"] != datetime(2020, 7, 24)]
     after = historical_data.shape[0]
@@ -145,4 +146,13 @@ def delete_date():
 
 
 if __name__ == '__main__':
-    update_data()
+    data = get_historical_data()
+    data = data[data["Ticker"] == "ACI"]
+    data = data[data["Date"] > datetime(2017, 5, 1)]
+    print(data.head(30))
+
+
+# hasura migrations
+# tests manuels de ma mr: avec la partie update
+# j'ai commencé la partie partage des fichiers
+
