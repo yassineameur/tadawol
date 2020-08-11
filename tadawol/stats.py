@@ -16,6 +16,13 @@ def add_sma(df: pd.DataFrame, window: int, column: str = "Close") -> Tuple[pd.Da
     return df, column_name
 
 
+def add_max(df: pd.DataFrame, window: int, column: str = "Close") -> Tuple[pd.DataFrame, str]:
+    column_name = f"{column}_max_{window}"
+    df.loc[:, column_name] = df[column].rolling(window=window).max()
+
+    return df, column_name
+
+
 def add_macd(
         df: pd.DataFrame,
         fast_length: int = 12,

@@ -1,3 +1,5 @@
 .idea/
 .tox
 *history.csv
+*.pyc
+.eggs/

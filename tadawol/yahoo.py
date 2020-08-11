@@ -1,4 +1,4 @@
-from typing import Set, Dict
+from typing import Set, Dict, Optional
 import os
 from datetime import datetime, timedelta
 import logging
@@ -18,8 +18,10 @@ TICKERS_LIST_PATH = os.path.join(DATA_PATH, "tickers_list.csv")
 STOCKS_HISTORY_PATH = os.path.join(DATA_PATH, "history.csv")
 
 
-def get_stock_data(ticker: str, start_date: datetime) -> pd.DataFrame:
-    end_date = datetime.utcnow() - timedelta(days=1)
+def get_stock_data(ticker: str, start_date: datetime, end_date: Optional[datetime] = None) -> pd.DataFrame:
+    if end_date is None:
+        end_date = datetime.utcnow() - timedelta(days=1)
+
     assert start_date < end_date
 
     fetcher = Fetcher(
@@ -62,32 +64,37 @@ def get_last_update_date_per_ticker() -> Dict[str, datetime]:
     return start_date_per_ticker
 
 
-def update_data():
+def _insert_data(data):
+    if len(data) > 0:
+        stocks_df = pd.concat(data, axis=0).reset_index(drop=True)
+        stocks_df.to_csv(STOCKS_HISTORY_PATH, mode='a', header=False)
+        logger.info(
+            "{} tickers data is inserted".format(
+                len(data)
+            )
+        )
+    else:
+        logger.info("No data is inserted")
+    return data
+
+
+def update_data(save_data: bool = True):
     start_date_per_ticker = get_last_update_date_per_ticker()
     logger.info("Fetching data for {} tickers".format(len(start_date_per_ticker)))
 
     failed_tickers = []
     data = []
 
-    def insert_data(data):
-        if len(data) > 0:
-            stocks_df = pd.concat(data, axis=0).reset_index(drop=True)
-            stocks_df.to_csv(STOCKS_HISTORY_PATH, mode='a', header=False)
-            logger.info(
-                "{} tickers data is inserted".format(
-                    len(data)
-                )
-            )
-            data = []
-        else:
-            logger.info("No data is inserted")
-        return data
+    added_data = []
 
     current_tickers_number = 0
     for ticker, start_date in start_date_per_ticker.items():
         try:
             current_tickers_number += 1
-            ticker_data = get_stock_data(ticker, start_date)
+            end_date = None
+            if not save_data:
+                end_date = datetime.now().date()
+            ticker_data = get_stock_data(ticker, start_date, end_date)
         except KeyboardInterrupt as e:
             logging.info('Interrupted by user')
             raise e
@@ -97,26 +104,37 @@ def update_data():
         else:
             if ticker_data.shape[0] > 0:
                 data.append(ticker_data)
+                added_data.append(ticker_data)
         finally:
-            if current_tickers_number % 50 == 0:
+            if current_tickers_number % 4 == 0:
                 logger.info(
                     'Treated {}% of tickers'.format(
                         round(100 * current_tickers_number/len(start_date_per_ticker))
                     )
                 )
                 if len(data) > 0:
-                    data = insert_data(data)
+                    if save_data:
+                        _insert_data(data)
+                    data = []
 
     if len(failed_tickers) > 0:
         logging.error("Failed to fetch data for {} ticker(s): {}".format(len(failed_tickers), failed_tickers))
+    if save_data:
+        _insert_data(data)
 
-    insert_data(data)
+    return added_data
 
 
-def check_data():
+def check_data(ticker: Optional[str]):
     df = get_historical_data()
+    if ticker is not None:
+        df = df[df["Ticker"] == ticker]
+
+    logger.info(f"Min date : {df.Date.min()}")
+    logger.info(f"Max date : {df.Date.max()}")
 
     tickers_number = df['Ticker'].nunique()
+
     logger.info(f'Tickers number = {tickers_number}')
     for ticker, ticker_data in df.groupby(["Ticker"]):
         logger.info(f"Checking {ticker} ...")
@@ -126,11 +144,14 @@ def check_data():
             raise Exception(f"{ticker}: rows_number = {rows_number}, dates_number = {dates_number}")
 
         ticker_data.sort_values(by=["Date"], inplace=True)
-        ticker_data['date_diff'] = df['Date'] - df['Date'].shift(1)
+        ticker_data.reset_index(drop=True, inplace=True)
+        ticker_data.loc[:, "last_date"] = df['Date'].shift(1)
+        ticker_data['date_diff'] = ticker_data['Date'] - ticker_data['last_date']
         ticker_data = ticker_data[1:]
         if ticker_data['date_diff'].max().days > 5:
             raise Exception(f"{ticker}: Max difference more than 5 days")
-        if ticker_data['date_diff'].min().days != 1:
+        if ticker_data['date_diff'].min().days < 1:
+
             raise Exception(f"{ticker}: Min difference  less than 1 day")
 
     logger.info("Data is good !")
@@ -145,14 +166,17 @@ def delete_date():
     historical_data.to_csv(STOCKS_HISTORY_PATH)
 
 
+def get_fresh_data():
+
+    added_data = update_data(save_data=False)
+    old_data = pd.read_csv(STOCKS_HISTORY_PATH)
+
+    return pd.concat([added_data, old_data], axis=0).reset_index(drop=True)
+
+
 if __name__ == '__main__':
     data = get_historical_data()
     data = data[data["Ticker"] == "ACI"]
     data = data[data["Date"] > datetime(2017, 5, 1)]
     print(data.head(30))
-
-
-# hasura migrations
-# tests manuels de ma mr: avec la partie update
-# j'ai commencé la partie partage des fichiers
 
