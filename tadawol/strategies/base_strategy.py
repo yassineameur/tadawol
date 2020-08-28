@@ -6,7 +6,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from ..yahoo import get_historical_data, get_fresh_data
+from ..history import get_historical_data, get_fresh_data
 from ..utils import get_last_week_entries, clean_results, get_search_grid
 
 logger = logging.getLogger(__name__)
@@ -21,6 +21,7 @@ class BaseStrategy(ABC):
         self.max_lose_percent = max_lose_percent
         self.max_win_percent = max_win_percent
         self.max_keep_days = max_keep_days
+        self.max_down_days = 4
         self.logger = logger
 
     @abstractmethod
@@ -39,12 +40,23 @@ class BaseStrategy(ABC):
             df.loc[:, f"Close_{i}"] = df["Close"].shift(-i)
 
         def get_exit_price(row):
-            close = row['Close']
+
             if not row["entry"]:
                 return None
             next_close = -1
-            for i in range(1, self.max_keep_days):
-                next_close = row[f"Close_{i}"]
+            close = row['Close']
+            last_close = close
+            down_days = 0
+            for day in range(1, self.max_keep_days):
+                next_close = row[f"Close_{day}"]
+                if next_close < last_close:
+                    down_days += 1
+                else:
+                    down_days = 0
+                last_close = next_close  # IMPORTANT
+
+                if down_days >= self.max_down_days:
+                    return next_close
                 if next_close > (1 + self.max_win_percent/100.0) * close:
                     return next_close
                 if next_close < (1 - self.max_lose_percent/100.0) * close:

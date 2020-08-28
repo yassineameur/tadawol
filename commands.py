@@ -1,4 +1,5 @@
-from tadawol.yahoo import update_data, check_data
+from tadawol.history import update_data, check_data
+from tadawol.earnings import update_data as update_earnings
 from tadawol.strategies.base_strategy import get_best_config
 from tadawol.strategies.record import Record
 from tadawol.strategies.recovery import Recovery
@@ -10,9 +11,14 @@ def cli():
     pass
 
 
-@cli.command("update")
+@cli.command("update_history")
 def update():
     update_data()
+
+
+@cli.command("update_earnings")
+def update():
+    update_earnings()
 
 
 @cli.command("check")

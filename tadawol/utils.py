@@ -1,4 +1,4 @@
-from typing import List, Type, Any
+from typing import List, Any
 import pandas as pd
 
 
@@ -54,10 +54,5 @@ def get_last_week_entries(df) -> pd.DataFrame:
 
     return pd.concat(tickers_data, axis=0)
 
-
-def print_bad_cases(df: pd.DataFrame, cases_number: int):
-
-    df = df.sort_values(by=["win_percent"], ascending=True)
-    print(df.head(cases_number))
 
 

@@ -13,6 +13,7 @@
 # OTHER IDEAS ###
 # when we have new 50 day record
 # When we get to a new level: 5, 10, 20, 50, 75, 100, 500, 1000, 1500
+# when price is bearish twice, get out immediately
 # Coder l'inverse d'une stratégie
 ###########
 import pandas as pd
