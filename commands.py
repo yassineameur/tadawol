@@ -1,5 +1,5 @@
-from tadawol.history import update_data, check_data
-from tadawol.earnings import update_data as update_earnings
+from tadawol.history import update_data, check_data as check_history_data
+from tadawol.earnings import update_data as update_earnings, check_data as check_earnings_data
 from tadawol.strategies.base_strategy import get_best_config
 from tadawol.strategies.record import Record
 from tadawol.strategies.recovery import Recovery
@@ -21,10 +21,21 @@ def update():
     update_earnings()
 
 
-@cli.command("check")
+@cli.group()
+def check():
+    pass
+
+
+@check.command("history")
+@click.option("--ticker", default=None)
+def check_history(ticker):
+    check_history_data(ticker)
+
+
+@check.command("earnings")
 @click.option("--ticker", default=None)
 def check(ticker):
-    check_data(ticker)
+    check_earnings_data(ticker)
 
 
 @cli.command("run_grid")

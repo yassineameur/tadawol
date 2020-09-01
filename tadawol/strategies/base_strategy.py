@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from math import inf
-from typing import List, Any, Type
+from typing import List, Any, Type, Optional
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -16,7 +16,7 @@ logger.addHandler(logging.StreamHandler())
 
 class BaseStrategy(ABC):
 
-    def __init__(self, max_lose_percent: int = 15, max_win_percent: int = 20, max_keep_days: int = 10):
+    def __init__(self, max_lose_percent: int, max_win_percent: int, max_keep_days: int):
 
         self.max_lose_percent = max_lose_percent
         self.max_win_percent = max_win_percent
@@ -36,46 +36,59 @@ class BaseStrategy(ABC):
     def get_exit_prices_for_ticker(self, df: pd.DataFrame):
         assert "entry" in list(df.columns)
         assert df["Ticker"].nunique() == 1
+
+        df.sort_values(by="Date", inplace=True, ascending=True)
+        df.reset_index(drop=True, inplace=True)
         for i in range(1, self.max_keep_days + 1):
             df.loc[:, f"Close_{i}"] = df["Close"].shift(-i)
-
-        def get_exit_price(row):
+        for i in range(1, self.max_keep_days + 1):
+            df.loc[:, f"Open_{i}"] = df["Open"].shift(-i)
+        df.reset_index(drop=True, inplace=True)
+        def get_exit_data(row):
 
             if not row["entry"]:
-                return None
-            next_close = -1
-            close = row['Close']
+                return None, None
+            day_close = -1
+            close = row["Close"]
+
             last_close = close
             down_days = 0
             for day in range(1, self.max_keep_days):
-                next_close = row[f"Close_{day}"]
-                if next_close < last_close:
+                day_close = row[f"Close_{day}"]
+                day_open = row[f"Open_{day}"]
+
+                if day_close < last_close:
                     down_days += 1
                 else:
                     down_days = 0
-                last_close = next_close  # IMPORTANT
+                last_close = day_close  # IMPORTANT
+                if day_close > (1 + self.max_win_percent/100.0) * close:
+                    return max(day_open, (1 + self.max_win_percent/100.0) * close), day
+                if day_close < (1 - self.max_lose_percent/100.0) * close:
+                    return min(day_open, (1 - self.max_lose_percent/100.0) * close), day
 
                 if down_days >= self.max_down_days:
-                    return next_close
-                if next_close > (1 + self.max_win_percent/100.0) * close:
-                    return next_close
-                if next_close < (1 - self.max_lose_percent/100.0) * close:
-                    return next_close
-            return next_close
+                    return day_close, day
 
-        df.loc[:, "exit_price"] = df.apply(get_exit_price, axis=1)
+            return day_close, self.max_keep_days
+
+        df.loc[:, "exit_data"] = df.apply(get_exit_data, axis=1)
+        df.loc[:, "exit_price"] = df.exit_data.map(lambda x: x[0])
+        df.loc[:, "exit_date"] = df.exit_data.map(lambda x: x[1])
 
         return df
 
-    def _get_entries(self, df: pd.DataFrame, samples_by_ticker=inf):
+    def _get_entries(self, df: pd.DataFrame, ticker_to_simulate: Optional[str] = None):
 
+        df = df.copy(deep=True)
+        if ticker_to_simulate is not None:
+            df = df[df["Ticker"] == ticker_to_simulate]
         data = []
         tickers_number = df["Ticker"].nunique()
         logger.info(f"Simulating strategy for {tickers_number} tickers")
 
         current_tickers_number = 0
         for ticker, ticker_data in df.groupby(["Ticker"]):
-            ticker_data = ticker_data.sample(min(samples_by_ticker, ticker_data.shape[0]))
             ticker_data = ticker_data.sort_values(by=["Date"], ascending=True)
             ticker_data.reset_index(drop=True, inplace=True)
             ticker_entries = self.add_entries_for_ticker(ticker_data)
@@ -93,11 +106,11 @@ class BaseStrategy(ABC):
         df = clean_results(df)
         df = get_last_week_entries(df)
 
-        return df[df["week_previous_entries"] >= 1]
+        return df[df["week_previous_entries"] >= 0]
 
-    def simulate(self, samples_by_ticker=inf):
+    def simulate(self, ticker_to_simulate: Optional[str] = None):
         df = get_historical_data()
-        return self._get_entries(df, samples_by_ticker)
+        return self._get_entries(df, ticker_to_simulate)
 
     def get_today_entries(self):
         df = get_fresh_data()
