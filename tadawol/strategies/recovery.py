@@ -14,6 +14,7 @@
 # when we have new 50 day record
 # When we get to a new level: 5, 10, 20, 50, 75, 100, 500, 1000, 1500
 # when there is a split
+# When there is some good earnings !
 # exit strategy: when price is bearish twice, get out immediately
 # Coder l'inverse d'une stratégie
 ###########
@@ -26,11 +27,11 @@ from tadawol import stats
 class Recovery(base_strategy.BaseStrategy):
     def __init__(
             self,
-            long_window: int = 40,
-            medium_window: int = 15,
-            short_window: int = 7,
-            max_lose_percent: int = 8,
-            max_win_percent: int = 20,
+            long_window: int = 20,
+            medium_window: int = 10,
+            short_window: int = 5,
+            max_lose_percent: int = 7,
+            max_win_percent: int = 15,
             max_keep_days: int = 10
     ):
         assert short_window < medium_window < long_window
@@ -44,6 +45,7 @@ class Recovery(base_strategy.BaseStrategy):
             max_keep_days=max_keep_days)
 
     def add_entries_for_ticker(self, ticker_data: pd.DataFrame):
+        ticker_data = ticker_data.copy(deep=True)
         ticker_data.sort_values(by="Date", ascending=True, inplace=True)
         ticker_data.reset_index(drop=True, inplace=True)
         assert ticker_data["Ticker"].nunique() == 1
@@ -52,12 +54,19 @@ class Recovery(base_strategy.BaseStrategy):
         df, medium_window_ema_column = stats.add_ema(df, window=self.medium_window)
         df, short_window_ema_column = stats.add_ema(df, window=self.short_window)
 
-        positive_slope_days = 10
-        df, positive_slope_column = stats.add_ema(df, window=positive_slope_days, column=short_window_ema_column)
-        df.loc[:, "slope_diff"] = df[positive_slope_column] - df[positive_slope_column].shift(1)
-        df.loc[:, "min_diff"] = df["slope_diff"].rolling(positive_slope_days).min()
+        df.loc[:, "diff_long_medium"] = df[medium_window_ema_column] - df[long_window_ema_column]
+        df.loc[:, "diff_medium_short"] = df[short_window_ema_column] - df[medium_window_ema_column]
 
-        df.loc[:, "entry"] = (df["min_diff"] > 0) & (df[long_window_ema_column] > df[medium_window_ema_column]) & (df[short_window_ema_column] > df[medium_window_ema_column])
+        df, ema_diff_long_medium = stats.add_ema(df, window=2, column="diff_long_medium")
+        df, ema_diff_medium_short = stats.add_ema(df, window=4, column="diff_medium_short")
+
+        df.loc[:, "evolution_diff_long_medium"] = (df[ema_diff_long_medium] - df[ema_diff_long_medium].shift(1)).rolling(window=5).min()
+        df.loc[:, "evolution_diff_medium_short"] = (df[ema_diff_medium_short] - df[ema_diff_medium_short].shift(1)).rolling(window=5).min()
+        # go-on condition
+
+        df.loc[:, "entry"] = (df["evolution_diff_long_medium"] > 0) & (df["evolution_diff_medium_short"] > 0)
+        df.loc[:, "ema_evolution"] = df[long_window_ema_column] - df[long_window_ema_column].shift(1)
+        df.loc[:, "go-on"] = df["entry"].shift(1) | df["entry"].shift(2) | df["entry"].shift(3) | df["entry"].shift(4) | df["entry"].shift(5) #| df["entry"].shift(6)
         return df
 
     @staticmethod

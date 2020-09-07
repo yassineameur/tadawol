@@ -3,10 +3,9 @@ import pandas as pd
 
 
 def clean_results(df: pd.DataFrame):
-    df = df[(df["entry"]) & (df["Close"] > 2)]
+    df = df[df["Close"] > 2]
     df = df[df["Volume"] > 100000]
-    df = df[df["win_percent"] < 50]
-    df = df[df["win_percent"] > -50]
+    df = df[~((df["win_percent"] > 50) | (df["win_percent"] < -50))]
 
     return df
 

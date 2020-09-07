@@ -3,6 +3,7 @@ from tadawol.earnings import update_data as update_earnings, check_data as check
 from tadawol.strategies.base_strategy import get_best_config
 from tadawol.strategies.record import Record
 from tadawol.strategies.recovery import Recovery
+from tadawol.strategies.macd import MACD
 import click
 
 
@@ -13,7 +14,7 @@ def cli():
 
 @cli.command("update_history")
 def update():
-    update_data()
+    update_data(None)
 
 
 @cli.command("update_earnings")
@@ -39,11 +40,14 @@ def check(ticker):
 
 
 @cli.command("run_grid")
-@click.argument("strategy", type=click.Choice(['Recovery', 'Record'], case_sensitive=False))
+@click.argument("strategy", type=click.Choice(['Recovery', 'Record', 'MACD'], case_sensitive=False))
 def check(strategy):
     if strategy == "Recovery":
         strategy = Recovery
     if strategy == "Record":
         strategy = Record
+
+    if strategy == "MACD":
+        strategy = MACD
 
     get_best_config(strategy)

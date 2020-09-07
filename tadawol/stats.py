@@ -2,7 +2,7 @@ from typing import Tuple
 import pandas as pd
 
 
-def add_ema(df: pd.DataFrame, window:int, column:str="Close") -> Tuple[pd.DataFrame, str]:
+def add_ema(df: pd.DataFrame, window: int, column: str = "Close") -> Tuple[pd.DataFrame, str]:
     column_name = f"{column}_ema_{window}"
     df.loc[:, column_name] = df[column].ewm(span=window).mean()
 

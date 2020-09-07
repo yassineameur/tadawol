@@ -4,14 +4,14 @@ from typing import List, Any, Type, Optional
 import logging
 from datetime import datetime, timedelta
 
+
 import pandas as pd
 
-from ..history import get_historical_data, get_fresh_data
+from ..history import get_historical_data, get_fresh_data, get_top_tickers
 from ..utils import get_last_week_entries, clean_results, get_search_grid
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
 
 
 class BaseStrategy(ABC):
@@ -21,7 +21,6 @@ class BaseStrategy(ABC):
         self.max_lose_percent = max_lose_percent
         self.max_win_percent = max_win_percent
         self.max_keep_days = max_keep_days
-        self.max_down_days = 4
         self.logger = logger
 
     @abstractmethod
@@ -41,48 +40,45 @@ class BaseStrategy(ABC):
         df.reset_index(drop=True, inplace=True)
         for i in range(1, self.max_keep_days + 1):
             df.loc[:, f"Close_{i}"] = df["Close"].shift(-i)
-        for i in range(1, self.max_keep_days + 1):
             df.loc[:, f"Open_{i}"] = df["Open"].shift(-i)
+            df.loc[:, f"go-on_{i}"] = df["go-on"].shift(-i)
+
         df.reset_index(drop=True, inplace=True)
         def get_exit_data(row):
 
             if not row["entry"]:
-                return None, None
+                return None, None, None
             day_close = -1
             close = row["Close"]
 
-            last_close = close
-            down_days = 0
             for day in range(1, self.max_keep_days):
                 day_close = row[f"Close_{day}"]
                 day_open = row[f"Open_{day}"]
-
-                if day_close < last_close:
-                    down_days += 1
-                else:
-                    down_days = 0
-                last_close = day_close  # IMPORTANT
+                if pd.isna(day_close):
+                    return None, None, None
                 if day_close > (1 + self.max_win_percent/100.0) * close:
-                    return max(day_open, (1 + self.max_win_percent/100.0) * close), day
+                    return max(day_open, (1 + self.max_win_percent/100.0) * close), day, "max win"
                 if day_close < (1 - self.max_lose_percent/100.0) * close:
-                    return min(day_open, (1 - self.max_lose_percent/100.0) * close), day
+                    return min(day_open, (1 - self.max_lose_percent/100.0) * close), day, "max lose"
 
-                if down_days >= self.max_down_days:
-                    return day_close, day
+                go_on = row[f"go-on_{day}"]
+                if not go_on:
+                    return day_close, day, "go-on lost"
 
-            return day_close, self.max_keep_days
+            return day_close, self.max_keep_days, "end days"
 
         df.loc[:, "exit_data"] = df.apply(get_exit_data, axis=1)
         df.loc[:, "exit_price"] = df.exit_data.map(lambda x: x[0])
         df.loc[:, "exit_date"] = df.exit_data.map(lambda x: x[1])
+        df.loc[:, "exit_reason"] = df.exit_data.map(lambda x: x[2])
 
         return df
 
-    def _get_entries(self, df: pd.DataFrame, ticker_to_simulate: Optional[str] = None):
+    def _get_trades(self, df: pd.DataFrame, tickers_to_simulate: Optional[List[str]] = None):
 
         df = df.copy(deep=True)
-        if ticker_to_simulate is not None:
-            df = df[df["Ticker"] == ticker_to_simulate]
+        if tickers_to_simulate is not None:
+            df = df[df["Ticker"].isin(tickers_to_simulate)]
         data = []
         tickers_number = df["Ticker"].nunique()
         logger.info(f"Simulating strategy for {tickers_number} tickers")
@@ -93,6 +89,7 @@ class BaseStrategy(ABC):
             ticker_data.reset_index(drop=True, inplace=True)
             ticker_entries = self.add_entries_for_ticker(ticker_data)
             ticker_exits = self.get_exit_prices_for_ticker(ticker_entries)
+
             data.append(ticker_exits)
 
             current_tickers_number += 1
@@ -102,40 +99,61 @@ class BaseStrategy(ABC):
         if len(data) == 0:
             return None
         df = pd.concat(data, axis=0)
+        df = df[df["entry"]]
+
         df.loc[:, "win_percent"] = 100 * (df["exit_price"] - df["Close"]) / df["Close"]
         df = clean_results(df)
         df = get_last_week_entries(df)
 
+        def get_exit(x):
+            if pd.isna(x["exit_date"]):
+                return None
+            return x["Date"] + timedelta(days=x["exit_date"])
+
+        df["exit"] = df.apply(get_exit, axis=1)
+
         return df[df["week_previous_entries"] >= 0]
 
-    def simulate(self, ticker_to_simulate: Optional[str] = None):
+    def simulate(self, tickers_to_simulate: Optional[List[str]] = None):
         df = get_historical_data()
-        return self._get_entries(df, ticker_to_simulate)
+        trades = self._get_trades(df, tickers_to_simulate)
+        return trades[trades['exit_price'].notna()]
 
-    def get_today_entries(self):
-        df = get_fresh_data()
-        df = self._get_entries(df)
-        today = datetime.now().date()
-        return df[df["Date"] == today]
+    def get_today_trades_and_exits(self, tickers: Optional[List[str]] = None):
+        df = get_fresh_data(tickers)
+
+        trades = self._get_trades(df)
+        today = (datetime.now() - timedelta(days=1)).date()
+        today_date = datetime(today.year, today.month, today.day)
+        today_trades = trades[trades["Date"] == today_date]
+        today_exits = trades[trades["exit"] == today_date]
+        return today_trades, today_exits
 
 
 def get_best_config(strategy: Type[BaseStrategy]):
     grid = strategy.get_grid()
     search_grid = get_search_grid(grid)
 
+    tickers = get_top_tickers(0, 300)
+
     best_win = -inf
     best_combination = None
+    logger.setLevel(logging.INFO)
+    simulations_number = len(search_grid)
+    i = 1
     for combination in search_grid:
         r = strategy(*combination)
-        res = r.simulate()
-        current_win = res["win_percent"].mean()
+        res = r.simulate(tickers)
+        current_win = round(100 * res[res["win_percent"] > 0].shape[0] / res.shape[0], 2)
         if current_win > best_win:
             best_win = current_win
             best_combination = combination
 
-        print("Current best combination = ", best_combination)
-        print("Current best win = ", best_win)
+        print(f" Simulation : {i}/{simulations_number}: Current best combination = ", best_combination)
+        print(f" Simulation : {i}/{simulations_number}:Current best win = ", best_win)
         print("-----------------------------------------------------")
+
+        i += 1
 
     print("Best combination = ", best_combination)
     print("Best win = ", best_win)

@@ -1,4 +1,4 @@
-from typing import Set, Dict, Optional
+from typing import Set, Dict, Optional, List
 import os
 from datetime import datetime, timedelta
 import logging
@@ -8,7 +8,6 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-logger.addHandler(logging.StreamHandler())
 
 
 DEFAULT_START_DATE = datetime(2010, 1, 15)
@@ -43,7 +42,7 @@ def get_tickers() -> Set[str]:
 def get_historical_data() -> pd.DataFrame:
     df = pd.read_csv(STOCKS_HISTORY_PATH)
     df.loc[:, 'Date'] = pd.to_datetime(df['Date'], format="%Y-%m-%d")
-    df = df[df["Date"] > datetime(2018, 7, 20)]
+    df = df[df["Date"] > datetime(2016, 6, 1)]
     logger.info("Historical data is extracted, rows_umber = {}".format(df.shape[0]))
     return df
 
@@ -78,13 +77,14 @@ def _insert_data(data):
     return data
 
 
-def update_data(save_data: bool = True):
+def update_data(tickers_to_update: Optional[List[str]] = None, save_data: bool = True):
     start_date_per_ticker = get_last_update_date_per_ticker()
-    logger.info("Fetching data for {} tickers".format(len(start_date_per_ticker)))
+    if tickers_to_update is not None:
+        start_date_per_ticker = {ticker: start_date for ticker, start_date in start_date_per_ticker.items() if ticker in tickers_to_update}
 
+    logger.info("Fetching data for {} tickers".format(len(start_date_per_ticker)))
     failed_tickers = []
     data = []
-
     added_data = []
 
     current_tickers_number = 0
@@ -93,7 +93,7 @@ def update_data(save_data: bool = True):
             current_tickers_number += 1
             end_date = None
             if not save_data:
-                end_date = datetime.now().date()
+                end_date = (datetime.now() + timedelta(days=1)).date()
             ticker_data = get_stock_data(ticker, start_date, end_date)
         except KeyboardInterrupt as e:
             logging.info('Interrupted by user')
@@ -106,7 +106,7 @@ def update_data(save_data: bool = True):
                 data.append(ticker_data)
                 added_data.append(ticker_data)
         finally:
-            if current_tickers_number % 4 == 0:
+            if current_tickers_number % 10 == 0:
                 logger.info(
                     'Treated {}% of tickers'.format(
                         round(100 * current_tickers_number/len(start_date_per_ticker))
@@ -122,7 +122,7 @@ def update_data(save_data: bool = True):
     if save_data:
         _insert_data(data)
 
-    return added_data
+    return pd.concat(added_data, axis=0)
 
 
 def check_data(ticker: Optional[str]):
@@ -166,12 +166,31 @@ def delete_date():
     historical_data.to_csv(STOCKS_HISTORY_PATH)
 
 
-def get_fresh_data():
+def get_fresh_data(tickers: Optional[List[str]] = None, days_number=100):
 
-    added_data = update_data(save_data=False)
+    added_data = update_data(tickers, save_data=False)
     old_data = pd.read_csv(STOCKS_HISTORY_PATH)
 
-    return pd.concat([added_data, old_data], axis=0).reset_index(drop=True)
+    df = pd.concat([added_data, old_data], axis=0).reset_index(drop=True)
+
+    if tickers is not None:
+        df = df[df["Ticker"].isin(tickers)]
+
+    limit_date = datetime.utcnow() - timedelta(days=days_number)
+    df.loc[:, "Date"] = pd.to_datetime(df['Date'])
+    df = df[df["Date"] > limit_date]
+    return df
+
+
+def get_top_tickers(start, end):
+
+    df = pd.read_csv(TICKERS_LIST_PATH)
+    df = df[["Ticker", "Market Capitalization"]]
+    df.drop_duplicates(inplace=True)
+    df.sort_values(by="Market Capitalization", ascending=False, inplace=True)
+    df.reset_index(drop=True, inplace=True)
+    df = df.loc[start: end, ]
+    return list(df["Ticker"])
 
 
 if __name__ == '__main__':
