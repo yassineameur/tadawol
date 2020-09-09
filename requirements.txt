@@ -90,6 +90,7 @@ scipy==1.5.2
 Send2Trash==1.5.0
 simplejson==3.17.2
 six==1.15.0
+smtpapi==0.4.5
 starlette==0.13.6
 terminado==0.8.3
 testpath==0.4.4

@@ -11,13 +11,13 @@ def send_email(text_to_send):
     email_config = EmailConfig()
     msg['Subject'] = f"{datetime.today().date()} tickers"
 
-    email_address = email_config.username
+    email_address = email_config.destination
     msg['From'] = email_address
     msg['To'] = email_address
 
     server = smtplib.SMTP(email_config.host, email_config.port)
     server.ehlo()
     server.starttls()
-    server.login(email_address, email_config.password)
+    server.login(email_config.username, email_config.password)
     server.sendmail(email_address, [email_address], msg.as_string())
     server.quit()

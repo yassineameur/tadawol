@@ -7,6 +7,7 @@ class EmailConfig(BaseSettings):
     port: int
     username: str
     password: str
+    destination: str
 
     class Config:
         allow_mutation = False
