@@ -80,6 +80,7 @@ pytest-cache==1.0
 pytest-cov==2.10.0
 pytest-mock==3.2.0
 python-dateutil==2.8.1
+python-http-client==3.3.1
 pytz==2020.1
 pyzmq==19.0.2
 qtconsole==4.7.5
@@ -88,9 +89,11 @@ requests==2.24.0
 scikit-learn==0.23.2
 scipy==1.5.2
 Send2Trash==1.5.0
+sendgrid==6.4.6
 simplejson==3.17.2
 six==1.15.0
 smtpapi==0.4.5
+starkbank-ecdsa==1.1.0
 starlette==0.13.6
 terminado==0.8.3
 testpath==0.4.4

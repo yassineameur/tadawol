@@ -3,10 +3,8 @@ from pydantic import BaseSettings
 
 class EmailConfig(BaseSettings):
 
-    host: str
-    port: int
-    username: str
-    password: str
+    api: str
+    source: str
     destination: str
 
     class Config:
