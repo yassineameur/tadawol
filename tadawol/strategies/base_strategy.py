@@ -123,7 +123,7 @@ class BaseStrategy(ABC):
         df = get_fresh_data(tickers)
 
         trades = self._get_trades(df)
-        today = (datetime.now() - timedelta(days=1)).date()
+        today = (datetime.now()).date()
         today_date = datetime(today.year, today.month, today.day)
         today_trades = trades[trades["Date"] == today_date]
         today_exits = trades[trades["exit"] == today_date]

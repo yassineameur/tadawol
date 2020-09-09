@@ -30,7 +30,6 @@ KO,16196843,208285885600,Consumer Non-Durables,United States,86200,Beverages: No
 ADBE,1901029,206404646150,Technology Services,United States,22634,Packaged Software,NASDAQ
 PYPL,6256092,202613049600,Technology Services,United States,23200,Data Processing Services,NASDAQ
 CMCSA,21926089,197856092156,Consumer Services,United States,190000,Cable/Satellite TV,NASDAQ
-CSCO,16983627,195914720000,Technology Services,United States,75900,Information Technology Services,NASDAQ
 MRK,8653360,194608110000,Health Technology,United States,71000,Pharmaceuticals: Major,NYSE
 PEP,3300145,188392757800,Consumer Non-Durables,United States,267000,Beverages: Non-Alcoholic,NASDAQ
 XOM,16415314,183631160300,Energy Minerals,United States,74900,Integrated Oil,NYSE
@@ -63,7 +62,6 @@ SHOP,2418790,109009484124,Retail Trade,Canada,5000,Internet Retail,NYSE
 WFC,39357026,108180696000,Finance,United States,259800,Major Banks,NYSE
 LMT,1305844,107961915820,Electronic Technology,United States,110000,Aerospace & Defense,NYSE
 C,16258882,107571773000,Finance,United States,200000,Financial Conglomerates,NYSE
-HON,4368458,104877146640,Producer Manufacturing,United States,113000,Industrial Conglomerates,NYSE
 UPS,2539333,102038608658,Transportation,United States,495000,Air Freight/Couriers,NYSE
 QCOM,9519999,99995027700,Electronic Technology,United States,37000,Telecommunications Equipment,NASDAQ
 RY,4840857,99390002400,Finance,Canada,85000,Major Banks,NYSE
@@ -72,18 +70,14 @@ GILD,8148980,92371806800,Health Technology,United States,11800,Biotechnology,NAS
 MMM,2524854,91939328640,Producer Manufacturing,United States,96163,Industrial Conglomerates,NYSE
 FIS,2435919,88782745800,Technology Services,United States,55000,Data Processing Services,NYSE
 SBUX,5673370,88518618000,Consumer Services,United States,346000,Restaurants,NASDAQ
-BLK,421653,86996725200,Finance,United States,16200,Investment Managers,NYSE
 SPGI,860886,84307773000,Commercial Services,United States,22500,Financial Publishing/Services,NYSE
-CVS,6436801,82791080600,Retail Trade,United States,290000,Drugstore Chains,NYSE
 DTEGF,1581,82621930348,Communications,Germany,210533,Major Telecommunications,OTC
 AMD,205314531,81280586000,Electronic Technology,United States,11400,Semiconductors,NASDAQ
 TD,1480491,81225150000,Finance,Canada,,Major Banks,NYSE
 NOW,1003821,81085433760,Technology Services,United States,10371,Information Technology Services,NYSE
 MS,6860824,79066618800,Finance,United States,60431,Investment Banks/Brokers,NYSE
-ISRG,790382,79031168580,Health Technology,United States,7326,Medical Specialties,NASDAQ
 MDLZ,5456904,78324730200,Consumer Non-Durables,United States,80000,Food: Major Diversified,NASDAQ
 MO,6186766,77772784500,Consumer Non-Durables,United States,7300,Tobacco,NYSE
-BDX,618628,77075105310,Health Technology,United States,70093,Medical Specialties,NYSE
 AXP,4790446,76737980760,Finance,United States,64500,Financial Conglomerates,NYSE
 INTU,1193362,75279372280,Technology Services,United States,9400,Packaged Software,NASDAQ
 SYK,1683878,74527051240,Health Technology,United States,40000,Medical Specialties,NYSE
@@ -108,13 +102,11 @@ ENB,1785632,63345128000,Industrial Services,Canada,11300,Oil & Gas Pipelines,NYS
 ADP,988290,62502032820,Technology Services,United States,58000,Data Processing Services,NASDAQ
 TGT,3833026,61856855650,Retail Trade,United States,368000,Specialty Stores,NYSE
 ATVI,4371429,61631175140,Consumer Durables,United States,9200,Recreational Products,NASDAQ
-CB,1153331,60892572870,Finance,Switzerland,33000,Property/Casualty Insurance,NYSE
 DUK,2953131,60838479870,Utilities,United States,28793,Electric Utilities,NYSE
 CME,1245172,60511748288,Finance,United States,4360,Investment Banks/Brokers,NASDAQ
 GE,65449459,60005037400,Electronic Technology,United States,205000,Aerospace & Defense,NYSE
 ECL,702336,59708714760,Process Industries,United States,50200,Chemicals: Specialty,NYSE
 VMW,789998,59010597906,Technology Services,United States,31000,Information Technology Services,NYSE
-MMC,1008414,58481760260,Finance,United States,76000,Insurance Brokers/Services,NYSE
 ITW,786937,58381074280,Producer Manufacturing,United States,45000,Industrial Machinery,NYSE
 SO,2741849,57919406000,Utilities,United States,27943,Electric Utilities,NYSE
 ZFSVF,289,56438487497,Finance,Switzerland,54030,Multi-Line Insurance,OTC
@@ -122,7 +114,6 @@ SHW,448178,56297816000,Process Industries,United States,61111,Industrial Special
 ILMN,537910,56190750000,Health Technology,United States,7700,Biotechnology,NASDAQ
 BFFAF,502,55659827400,Process Industries,Germany,117628,Chemicals: Major Diversified,OTC
 USB,7385792,55612226800,Finance,United States,69651,Major Banks,NYSE
-HINKF,389,55574794338,Consumer Non-Durables,Netherlands,,Beverages: Alcoholic,OTC
 MU,25333431,55572220000,Electronic Technology,United States,37000,Semiconductors,NASDAQ
 AMAT,11040982,55556956980,Producer Manufacturing,United States,22000,Industrial Machinery,NASDAQ
 ADDDF,30,55263314682,Consumer Non-Durables,Germany,59533,Apparel/Footwear,OTC
@@ -131,12 +122,10 @@ DE,910844,54859825650,Producer Manufacturing,United States,73500,Trucks/Construc
 CSX,2954189,54578881020,Transportation,United States,21000,Railroads,NASDAQ
 UBER,16896059,54439032800,Technology Services,United States,26900,Packaged Software,NYSE
 MCO,583597,54315000000,Commercial Services,United States,11000,Financial Publishing/Services,NYSE
-RTX,6058884,53762861550,Electronic Technology,United States,243200,Aerospace & Defense,NYSE
 NEM,6951011,53572548750,Non-Energy Minerals,United States,31600,Precious Metals,NYSE
 BNPQF,1124,53389814402,Finance,France,202876,Major Banks,OTC
 SQ,8059974,53341598111,Technology Services,United States,3835,Information Technology Services,NYSE
 ICE,3222017,52708423040,Finance,United States,5989,Investment Banks/Brokers,NYSE
-NOC,686941,52126361070,Electronic Technology,United States,90000,Aerospace & Defense,NYSE
 HUM,458852,51843260840,Health Services,United States,46000,Managed Health Care,NYSE
 GPN,999643,51634668780,Technology Services,United States,24000,Data Processing Services,NYSE
 PGR,2204357,51433244000,Finance,United States,41571,Property/Casualty Insurance,NYSE
@@ -151,14 +140,12 @@ AXAHF,60431,49564645503,Finance,France,99843,Multi-Line Insurance,OTC
 SPOT,2406592,49560206306,Technology Services,Luxembourg,,Internet Software/Services,NYSE
 MELI,449649,49162692900,Technology Services,Argentina,9703,Internet Software/Services,NASDAQ
 EW,5463072,48414348320,Health Technology,United States,13900,Medical Specialties,NYSE
-DG,1107958,48255107400,Retail Trade,United States,143000,Discount Stores,NYSE
 AON,1022886,47966484440,Finance,Ireland,50000,Insurance Brokers/Services,NYSE
 NSC,1099318,47908034790,Transportation,United States,,Railroads,NYSE
 GPDNF,568,46164456972,Consumer Non-Durables,France,102449,Food: Major Diversified,OTC
 TEAM,1408780,45503690999,Technology Services,Australia,3616,Packaged Software,NASDAQ
 BAX,2362021,45418701360,Health Technology,United States,50000,Medical Specialties,NYSE
 PNC,1991331,45327938400,Finance,United States,51918,Major Banks,NYSE
-WM,1224125,45274842000,Industrial Services,United States,44900,Environmental Services,NYSE
 DELL,1286544,44982396032,Electronic Technology,United States,165000,Computer Processing Hardware,NYSE
 SCHW,6578036,44981057200,Finance,United States,19700,Investment Banks/Brokers,NYSE
 UBS,2302551,43656025069,Finance,Switzerland,68601,Major Banks,NYSE
@@ -167,19 +154,15 @@ ROP,426328,43352942190,Electronic Technology,United States,16460,Electronic Equi
 FDX,1546235,43232888160,Transportation,United States,245000,Air Freight/Couriers,NYSE
 COP,5202602,43197480400,Energy Minerals,United States,10400,Oil & Gas Production,NYSE
 BIIB,862283,43113379290,Health Technology,United States,7400,Biotechnology,NASDAQ
-GD,787717,43072779750,Electronic Technology,United States,102900,Aerospace & Defense,NYSE
 WDAY,1015851,42953300000,Technology Services,United States,12200,Information Technology Services,NASDAQ
-KDP,999414,42692931000,Consumer Non-Durables,United States,25500,Beverages: Non-Alcoholic,NYSE
 HCA,1646076,42374560690,Health Services,United States,280000,Hospital/Nursing Management,NYSE
 KHC,4331505,42373064400,Consumer Non-Durables,United States,37000,Food: Major Diversified,NASDAQ
 TRP,1297769,41924000000,Industrial Services,Canada,7305,Oil & Gas Pipelines,NYSE
-LULU,1442306,41890485500,Retail Trade,Canada,19000,Apparel/Footwear Retail,NASDAQ
 ADI,3736051,41400328340,Electronic Technology,United States,16400,Semiconductors,NASDAQ
 DD,4979451,40028626350,Process Industries,United States,35000,Chemicals: Major Diversified,NYSE
 EPD,4874106,39652044600,Industrial Services,United States,7300,Oil & Gas Pipelines,NYSE
 MNST,1586169,39429112320,Consumer Non-Durables,United States,3529,Beverages: Non-Alcoholic,NASDAQ
 GIS,2779503,39171885870,Consumer Non-Durables,United States,35000,Food: Major Diversified,NYSE
-CNC,2645321,39096998790,Health Services,United States,56600,Managed Health Care,NYSE
 EA,1354384,39045681360,Consumer Durables,United States,9800,Recreational Products,NASDAQ
 DXCM,629199,38946461575,Health Technology,United States,5200,Medical Specialties,NASDAQ
 EBAY,6509620,38731666480,Consumer Services,United States,13300,Other Consumer Services,NASDAQ
@@ -193,13 +176,11 @@ LHX,1269034,37141271040,Electronic Technology,United States,,Aerospace & Defense
 EXC,5426154,36832622400,Utilities,United States,32713,Electric Utilities,NASDAQ
 SRE,1431217,36749502900,Utilities,United States,13969,Gas Distributors,NYSE
 XEL,1503023,35648607480,Utilities,United States,11273,Electric Utilities,NASDAQ
-FSUMF,2643,35547888661,Non-Energy Minerals,Australia,779,Steel,OTC
 BMO,450305,35135809710,Finance,Canada,45513,Major Banks,NYSE
 WBA,3987955,35103292340,Retail Trade,United States,342000,Drugstore Chains,NASDAQ
 DOCU,3984210,35041043550,Technology Services,United States,3909,Packaged Software,NASDAQ
 TWLO,2787047,34773744473,Technology Services,United States,2905,Packaged Software,NYSE
 MET,3324487,34688051580,Finance,United States,49000,Life/Health Insurance,NYSE
-STZ.B,405,34469641602,Consumer Non-Durables,United States,9000,Beverages: Alcoholic,NYSE
 STZ,803909,34290420057,Consumer Non-Durables,United States,9000,Beverages: Alcoholic,NYSE
 LVS,5408190,33879062800,Consumer Services,United States,50000,Casinos/Gaming,NYSE
 TRI,579717,33841601500,Commercial Services,Canada,24400,Financial Publishing/Services,NYSE
@@ -211,7 +192,6 @@ IFNNF,9303,32796392184,Electronic Technology,Germany,41418,Semiconductors,OTC
 MSCI,273441,32785957620,Finance,United States,3396,Investment Managers,NYSE
 SNAP,22471837,32543217219,Technology Services,United States,3195,Internet Software/Services,NYSE
 BF.B,521103,32531540000,Consumer Non-Durables,United States,4800,Beverages: Alcoholic,NYSE
-NXPI,3147650,32298301250,Electronic Technology,Netherlands,29400,Semiconductors,NASDAQ
 KMI,12321391,32226232500,Industrial Services,United States,11086,Oil & Gas Pipelines,NYSE
 BK,5809069,32094780260,Finance,United States,48400,Major Banks,NYSE
 SPLK,790535,31705486330,Technology Services,United States,5800,Information Technology Services,NASDAQ
@@ -237,7 +217,6 @@ PCAR,2678697,29648892000,Producer Manufacturing,United States,27000,Trucks/Const
 ALL,1857278,29639985760,Finance,United States,46290,Property/Casualty Insurance,NYSE
 COF,2194849,29622468600,Finance,United States,51900,Major Banks,NYSE
 BF.A,57900,29608485450,Consumer Non-Durables,United States,4800,Beverages: Alcoholic,NYSE
-WEC,1232790,29521561650,Utilities,United States,7509,Electric Utilities,NYSE
 TWTR,23068344,29454972660,Technology Services,United States,4900,Internet Software/Services,NYSE
 ALC,1186800,29388909000,Health Technology,Switzerland,22142,Medical Specialties,NYSE
 RMD,358910,29286589920,Health Technology,United States,7240,Medical Specialties,NYSE
@@ -249,7 +228,6 @@ SNPS,1206479,29158068930,Technology Services,United States,13896,Packaged Softwa
 TEL,2175992,28785834960,Electronic Technology,Switzerland,78000,Electronic Components,NYSE
 CDNS,2006777,28601476460,Technology Services,United States,8100,Packaged Software,NASDAQ
 EOG,3055045,28543535840,Energy Minerals,United States,2900,Oil & Gas Production,NYSE
-MRNA,27797477,28465805040,Health Technology,United States,830,Biotechnology,NASDAQ
 PSX,2040648,28410075500,Energy Minerals,United States,14500,Oil Refining/Marketing,NYSE
 CLX,730196,28402704000,Consumer Non-Durables,United States,8800,Household/Personal Care,NYSE
 MAR,2369546,28372400000,Consumer Services,United States,174000,Hotels/Resorts/Cruise lines,NASDAQ
@@ -261,13 +239,10 @@ CSGP,380534,27458642205,Technology Services,United States,4337,Internet Software
 JCI,3674150,27374121600,Producer Manufacturing,Ireland,104000,Office Equipment/Supplies,NYSE
 F,62292045,27362049483,Consumer Durables,United States,190000,Motor Vehicles,NYSE
 AZO,136086,27297561246,Retail Trade,United States,96000,Specialty Stores,NYSE
-WLTW,413521,27235949760,Finance,United Kingdom,46600,Insurance Brokers/Services,NASDAQ
 MFC,1546071,27113650800,Finance,Canada,35000,Life/Health Insurance,NYSE
 HRL,1306428,27093117040,Consumer Non-Durables,United States,18800,Food: Meat/Fish/Dairy,NYSE
-RSG,822753,27048043000,Industrial Services,United States,36000,Environmental Services,NYSE
 SLB,16738625,27034538800,Industrial Services,United States,105000,Oilfield Services/Equipment,NYSE
 TSCDF,13101,27030060000,Retail Trade,United Kingdom,410471,Food Retail,OTC
-KR,5034416,27001811460,Retail Trade,United States,435000,Food Retail,NYSE
 AIG,3960874,26967021210,Finance,United States,46000,Multi-Line Insurance,NYSE
 PEG,1694056,26429018750,Utilities,United States,7130,Electric Utilities,NYSE
 AFL,2226411,26382769160,Finance,United States,11729,Life/Health Insurance,NYSE
@@ -277,10 +252,8 @@ FAST,3401184,26235137540,Distribution Services,United States,21948,Wholesale Dis
 ROK,431178,26198230560,Producer Manufacturing,United States,23000,Electrical Products,NYSE
 AWK,834131,26161443960,Utilities,United States,6800,Water Utilities,NYSE
 WCN,831388,26139351560,Industrial Services,Canada,18204,Environmental Services,NYSE
-PPG,957047,26083646880,Process Industries,United States,47600,Industrial Specialties,NYSE
 PAYX,1744825,25901772000,Technology Services,United States,15800,Data Processing Services,NASDAQ
 SIRI,19196558,25858703600,Consumer Services,United States,4534,Broadcasting,NASDAQ
-MKC.V,861,25811843875,Consumer Non-Durables,United States,12400,Food: Specialty/Candy,NYSE
 MKC,529195,25781202718,Consumer Non-Durables,United States,12400,Food: Specialty/Candy,NYSE
 PRU,1673294,25639450000,Finance,United States,51511,Financial Conglomerates,NYSE
 OKTA,920584,25624594760,Technology Services,United States,2248,Packaged Software,NASDAQ
@@ -301,7 +274,6 @@ TT,1006877,24820222080,Producer Manufacturing,Ireland,50000,Industrial Conglomer
 XP,1801411,24626833107,Technology Services,Brazil,,Internet Software/Services,NASDAQ
 LBRDK,281305,24154447790,Consumer Services,United States,56,Cable/Satellite TV,NASDAQ
 MSI,1369992,24103595910,Electronic Technology,United States,17000,Aerospace & Defense,NYSE
-WPM,4246297,24040634240,Non-Energy Minerals,Canada,39,Precious Metals,NYSE
 VRSN,1716216,23950504620,Technology Services,United States,872,Internet Software/Services,NASDAQ
 FTV,1850337,23916776000,Electronic Technology,United States,25000,Electronic Equipment/Instruments,NYSE
 BLL,1500209,23850306320,Process Industries,United States,18300,Containers/Packaging,NYSE
@@ -315,13 +287,10 @@ ALGN,796575,23482400820,Health Technology,United States,14530,Medical Specialtie
 PH,423246,23445760620,Producer Manufacturing,United States,55610,Industrial Machinery,NYSE
 ADM,2458835,23380826640,Process Industries,United States,38100,Agricultural Commodities/Milling,NYSE
 VFC,1604962,23334584100,Consumer Non-Durables,United States,48000,Apparel/Footwear,NYSE
-LBRDB,300,23330318480,Consumer Services,United States,56,Cable/Satellite TV,OTC
-WMB,5652728,23305572000,Industrial Services,United States,4812,Oil & Gas Pipelines,NYSE
 MRVL,8198870,23278847000,Electronic Technology,Bermuda,5633,Semiconductors,NASDAQ
 DHI,2935375,23175547500,Consumer Durables,United States,8916,Homebuilding,NYSE
 SLF,361189,23168886900,Finance,Canada,22719,Multi-Line Insurance,NYSE
 CARR,8293002,23022506220,Producer Manufacturing,United States,52635,Industrial Machinery,NYSE
-TDG,348606,23011007988,Electronic Technology,United States,18300,Aerospace & Defense,NYSE
 CZR,9186731,22972106250,Consumer Services,United States,64000,Casinos/Gaming,NASDAQ
 LYB,1328881,22858861000,Process Industries,United Kingdom,19100,Chemicals: Specialty,NYSE
 DLTR,1205495,22679379200,Retail Trade,United States,193100,Discount Stores,NASDAQ
@@ -334,7 +303,6 @@ DTE,1520512,22067556840,Utilities,United States,10700,Electric Utilities,NYSE
 SWKS,3028130,21957285960,Electronic Technology,United States,9000,Semiconductors,NASDAQ
 STT,1701824,21944456600,Finance,United States,39103,Regional Banks,NYSE
 CERN,1513643,21849214710,Technology Services,United States,27400,Information Technology Services,NASDAQ
-TU,1041762,21802680000,Communications,Canada,65600,Major Telecommunications,NYSE
 LEN,2245661,21791313348,Consumer Durables,United States,10106,Homebuilding,NYSE
 TSN,1194455,21732161012,Consumer Non-Durables,United States,141000,Food: Meat/Fish/Dairy,NYSE
 FLT,421021,21627671776,Commercial Services,United States,8700,Miscellaneous Commercial Services,NYSE

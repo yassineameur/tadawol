@@ -15,7 +15,7 @@ def send_email(text_to_send):
     smtp_port = 587
     smtp_host = "smtp.gmail.com"
     login = "yassine.ameur2013@gmail.com"
-    password = "yassineetmariem"
+    password = "23Avril2010*"
 
     server = smtplib.SMTP(smtp_host, smtp_port)
     server.ehlo()
