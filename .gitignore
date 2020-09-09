@@ -3,3 +3,5 @@
 history.csv
 *.pyc
 .eggs/
+*/__pycache__/*
+env.sh

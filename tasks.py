@@ -5,9 +5,10 @@ from tadawol.strategies.macd import MACD
 from tadawol.history import get_top_tickers
 from tadawol.earnings import get_earnings_data_on_all_dates
 from tadawol.services import email
+from tadawol.config import BrokerConfig
 
 
-app = Celery("tasks", broker="amqps://elojhrja:OkLbk867cudFaYudiGFv6zHP2TpuRdgz@chinook.rmq.cloudamqp.com/elojhrja")
+app = Celery("tasks", broker=BrokerConfig().url)
 
 
 @app.task
