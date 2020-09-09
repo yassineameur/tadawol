@@ -125,6 +125,43 @@ def update_data(tickers_to_update: Optional[List[str]] = None, save_data: bool =
     return pd.concat(added_data, axis=0)
 
 
+def get_fresh_data(tickers_to_update: List[str], past_days: int = 100):
+
+    logger.info("Fetching data for {} tickers".format(len(tickers_to_update)))
+    failed_tickers = []
+    data = []
+
+    start_date = (datetime.now() - timedelta(days=past_days)).date()
+    end_date = (datetime.now() + timedelta(days=1)).date()
+
+    current_tickers_number = 0
+    for ticker in tickers_to_update:
+        try:
+            current_tickers_number += 1
+            ticker_data = get_stock_data(ticker, start_date, end_date)
+        except KeyboardInterrupt as e:
+            logging.info('Interrupted by user')
+            raise e
+        except:
+            logging.error("Failed to fetch data for {}".format(ticker))
+            failed_tickers.append(ticker)
+        else:
+            if ticker_data.shape[0] > 0:
+                data.append(ticker_data)
+        finally:
+            if current_tickers_number % 10 == 0:
+                logger.info(
+                    'Treated {}% of tickers'.format(
+                        round(100 * current_tickers_number/len(tickers_to_update))
+                    )
+                )
+
+    df = pd.concat(data, axis=0)
+    df.loc[:, "Date"] = pd.to_datetime(df['Date'])
+
+    return df
+
+
 def check_data(ticker: Optional[str]):
     df = get_historical_data()
     if ticker is not None:
@@ -166,7 +203,7 @@ def delete_date():
     historical_data.to_csv(STOCKS_HISTORY_PATH)
 
 
-def get_fresh_data(tickers: Optional[List[str]] = None, days_number=100):
+def get_fresh_data_v2(tickers: Optional[List[str]] = None, days_number=100):
 
     added_data = update_data(tickers, save_data=False)
     old_data = pd.read_csv(STOCKS_HISTORY_PATH)

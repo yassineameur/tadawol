@@ -12,11 +12,11 @@ app = Celery("tasks", broker="amqps://elojhrja:OkLbk867cudFaYudiGFv6zHP2TpuRdgz@
 
 @app.task
 def execute_macd(
-        min_top_ticker: int = 0,
-        max_top_ticker: int = 300,
-        days_to_next_result: int = 20,
-        days_since_last_result: int = 0,
-        week_previous_entries: int = 1):
+        min_top_ticker: int,
+        max_top_ticker: int,
+        days_to_next_result: int,
+        days_since_last_result: int,
+        week_previous_entries: int):
     strategy = MACD()
 
     tickers = get_top_tickers(min_top_ticker, max_top_ticker)
@@ -27,14 +27,12 @@ def execute_macd(
     today_trades = today_trades[today_trades["days_to_next_result"] > days_to_next_result]
     today_trades = today_trades[today_trades["days_since_last_result"] > days_since_last_result]
     today_trades = today_trades[today_trades["week_previous_entries"] >= week_previous_entries]
-    print(list(today_trades.columns))
-    print("****")
-    print(today_trades.head())
 
-    entry_columns = ["Date", "Ticker", "company_short_name", "Close", "week_previous_entries", "earnings_surprise", "days_to_next_result"]
+    trades_columns = [
+        "Date", "Ticker", "company_short_name", "Close", "week_previous_entries",
+        "earnings_surprise", "days_to_next_result", "exit_reason"]
 
-    exit_columns = entry_columns.copy()
-    exit_columns += ["exit_reason"]
+    exit_columns = ["Date", "Ticker", "Close", "week_previous_entries", "exit_reason"]
 
     html = """\
     <html>
@@ -46,7 +44,7 @@ def execute_macd(
         {1}
       </body>
     </html>
-    """.format(today_trades[entry_columns].to_html(), today_exits[exit_columns].to_html())
+    """.format(today_trades[trades_columns].to_html(), today_exits[exit_columns].to_html())
 
     email.send_email(html)
 

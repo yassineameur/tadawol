@@ -94,21 +94,31 @@ def get_earnings_data_on_all_dates(reference_df: pd.DataFrame):
             logger.info(f"[Earnings] Treated tickers number = {round(100.0 * treated_tickers_number / tickers_number)}%")
 
     logger.info(f"Putting data into dataframe ...: rows number = {len(data)}")
-    res_df = pd.DataFrame(
-        data=data,
-        columns=[
+    columns = [
             "Ticker", "company_short_name", "Date",
             "earnings_date", "next_earnings_date",
             "earnings_estimate", "real_earnings", "earnings_surprise"
         ]
+    res_df = pd.DataFrame(
+        data=data,
+        columns=columns
     )
 
     def get_days_diff(x, y):
         return round((x - y).total_seconds() / (60 * 60 * 24))
 
     logger.info(f"Adding features ...")
-    res_df.loc[:, "days_since_last_result"] = res_df.apply(lambda x: get_days_diff(x["Date"], x["earnings_date"]), axis=1)
-    res_df.loc[:, "days_to_next_result"] = res_df.apply(lambda x: get_days_diff(x["next_earnings_date"], x["Date"]), axis=1)
+    if not res_df.empty:
+        res_df.loc[:, "days_since_last_result"] = res_df.apply(lambda x: get_days_diff(x["Date"], x["earnings_date"]), axis=1)
+        res_df.loc[:, "days_to_next_result"] = res_df.apply(lambda x: get_days_diff(x["next_earnings_date"], x["Date"]), axis=1)
+    else:
+
+        columns.append("days_since_last_result")
+        columns.append("days_to_next_result")
+        df = pd.DataFrame(data=[], columns=columns)
+        df["Date"] = pd.to_datetime(df["Date"])
+        return df
+
     return res_df
 
 
