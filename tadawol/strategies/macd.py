@@ -5,7 +5,9 @@ from tadawol import stats
 
 # 15, 30, 9
 
+
 class MACD(base_strategy.BaseStrategy):
+
     def __init__(
             self,
             short_window: int = 15,

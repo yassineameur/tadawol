@@ -30,7 +30,7 @@ def update_data():
     on_date = latest_date + timedelta(days=1)
     on_date = datetime(on_date.year, on_date.month, on_date.day)
     yec = YahooEarningsCalendar(delay=1)
-    while on_date <= datetime.utcnow() - timedelta(days=2):
+    while on_date <= datetime.utcnow() - timedelta(days=1):
         logger.info(f"[Earnings] Add data on {on_date}")
         data = yec.earnings_on(on_date)
         df = pd.DataFrame(data)

@@ -5,3 +5,4 @@ history.csv
 .eggs/
 */__pycache__/*
 env.sh
+tadawol.egg-info
