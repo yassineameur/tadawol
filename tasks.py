@@ -40,8 +40,6 @@ def _send_entry_and_exit(entry_df: pd.DataFrame, exit_df: pd.DataFrame, strategy
 def execute_macd(
         min_top_ticker: int,
         max_top_ticker: int,
-        days_to_next_result: int,
-        days_since_last_result: int,
         week_previous_entries: int):
     strategy = MACD()
 
@@ -50,8 +48,8 @@ def execute_macd(
 
     earnings_by_date = get_earnings_data_on_all_dates(today_trades)
     today_trades = pd.merge(today_trades, earnings_by_date, on=["Ticker", "Date"])
-    today_trades = today_trades[today_trades["days_to_next_result"] > days_to_next_result]
-    today_trades = today_trades[today_trades["days_since_last_result"] > days_since_last_result]
+    #today_trades = today_trades[today_trades["days_to_next_result"] > days_to_next_result]
+    #today_trades = today_trades[today_trades["days_since_last_result"] > days_since_last_result]
     today_trades = today_trades[today_trades["week_previous_entries"] >= week_previous_entries]
 
     _send_entry_and_exit(today_trades, today_exits, "MACD")

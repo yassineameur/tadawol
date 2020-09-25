@@ -125,7 +125,7 @@ def update_data(tickers_to_update: Optional[List[str]] = None, save_data: bool =
     return pd.concat(added_data, axis=0)
 
 
-def get_fresh_data(tickers_to_update: List[str], past_days: int = 100):
+def get_fresh_data(tickers_to_update: List[str], past_days: int = 90):
 
     logger.info("Fetching data for {} tickers".format(len(tickers_to_update)))
     failed_tickers = []

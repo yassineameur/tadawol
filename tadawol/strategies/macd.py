@@ -50,8 +50,6 @@ class MACD(base_strategy.BaseStrategy):
 
         df.loc[:, "entry"] = (df["evolution_emas_diff"] > 0) & (df["emas_diff"] < 0) #& (df["good_ema"])
 
-
-
         # go-on condition
         df.loc[:, "good_evolution"] = df["evolution_emas_diff"] > 0
         df.loc[:, "go-on"] = df["good_evolution"] | df["good_evolution"].shift(1) | df["good_evolution"].shift(2) | df["good_evolution"].shift(3) | df["good_evolution"].shift(4) | df["good_evolution"].shift(5)
