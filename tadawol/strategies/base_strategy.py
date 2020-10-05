@@ -42,6 +42,7 @@ class BaseStrategy(ABC):
             df.loc[:, f"Close_{i}"] = df["Close"].shift(-i)
             df.loc[:, f"Open_{i}"] = df["Open"].shift(-i)
             df.loc[:, f"go-on_{i}"] = df["go-on"].shift(-i)
+            df.loc[:, f"Date_{i}"] = df["Date"].shift(-i)
 
         df.reset_index(drop=True, inplace=True)
         def get_exit_data(row):
@@ -54,8 +55,9 @@ class BaseStrategy(ABC):
             for day in range(1, self.max_keep_days):
                 day_close = row[f"Close_{day}"]
                 day_open = row[f"Open_{day}"]
+                day_date = row[f"Day_{day}"]
                 if pd.isna(day_close):
-                    return None, None, None
+                    return None, None, None, None
                 if day_close > (1 + self.max_win_percent/100.0) * close:
                     return max(day_open, (1 + self.max_win_percent/100.0) * close), day, "max win"
                 if day_close < (1 - self.max_lose_percent/100.0) * close:
@@ -63,14 +65,15 @@ class BaseStrategy(ABC):
 
                 go_on = row[f"go-on_{day}"]
                 if not go_on:
-                    return day_close, day, "go-on lost"
+                    return day_close, day, "go-on lost", day_date
 
-            return day_close, self.max_keep_days, "end days"
+            return day_close, self.max_keep_days, "end days", day_date
 
         df.loc[:, "exit_data"] = df.apply(get_exit_data, axis=1)
         df.loc[:, "exit_price"] = df.exit_data.map(lambda x: x[0])
         df.loc[:, "exit_date"] = df.exit_data.map(lambda x: x[1])
         df.loc[:, "exit_reason"] = df.exit_data.map(lambda x: x[2])
+        df.loc[:, "exit"] = df.exit_data.map(lambda x: x[3])
 
         return df
 
@@ -104,14 +107,6 @@ class BaseStrategy(ABC):
         df.loc[:, "win_percent"] = 100 * (df["exit_price"] - df["Close"]) / df["Close"]
         df = clean_results(df)
         df = get_last_week_entries(df)
-
-        def get_exit(x):
-            if pd.isna(x["exit_date"]):
-                return None
-            return x["Date"] + timedelta(days=x["exit_date"])
-
-        df["exit"] = df.apply(get_exit, axis=1)
-
         return df[df["week_previous_entries"] >= 0]
 
     def simulate(self, tickers_to_simulate: Optional[List[str]] = None):
