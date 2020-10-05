@@ -55,7 +55,7 @@ class BaseStrategy(ABC):
             for day in range(1, self.max_keep_days):
                 day_close = row[f"Close_{day}"]
                 day_open = row[f"Open_{day}"]
-                day_date = row[f"Day_{day}"]
+                day_date = row[f"Date_{day}"]
                 if pd.isna(day_close):
                     return None, None, None, None
                 if day_close > (1 + self.max_win_percent/100.0) * close:
