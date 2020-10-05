@@ -48,7 +48,7 @@ class BaseStrategy(ABC):
         def get_exit_data(row):
 
             if not row["entry"]:
-                return None, None, None
+                return None, None, None, None
             day_close = -1
             close = row["Close"]
 
@@ -59,9 +59,9 @@ class BaseStrategy(ABC):
                 if pd.isna(day_close):
                     return None, None, None, None
                 if day_close > (1 + self.max_win_percent/100.0) * close:
-                    return max(day_open, (1 + self.max_win_percent/100.0) * close), day, "max win"
+                    return max(day_open, (1 + self.max_win_percent/100.0) * close), day, "max win", day_date
                 if day_close < (1 - self.max_lose_percent/100.0) * close:
-                    return min(day_open, (1 - self.max_lose_percent/100.0) * close), day, "max lose"
+                    return min(day_open, (1 - self.max_lose_percent/100.0) * close), day, "max lose", day_date
 
                 go_on = row[f"go-on_{day}"]
                 if not go_on:
