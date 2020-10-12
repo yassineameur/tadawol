@@ -4,7 +4,6 @@ from tasks import execute_macd, execute_earnings
 from pydantic import BaseModel
 
 
-
 app = FastAPI()
 
 
@@ -17,7 +16,7 @@ async def root():
 async def macd(
         min_top_ticker: int = 0,
         max_top_ticker: int = 300,
-        week_previous_entries: int = 1
+        week_previous_entries: int = 0
 ):
     execute_macd.delay(
         min_top_ticker=min_top_ticker,

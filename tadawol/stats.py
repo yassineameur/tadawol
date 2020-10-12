@@ -23,6 +23,20 @@ def add_max(df: pd.DataFrame, window: int, column: str = "Close") -> Tuple[pd.Da
     return df, column_name
 
 
+def add_atr(df: pd.DataFrame, window: int = 14) -> Tuple[pd.DataFrame, str]:
+
+    df.loc[:, "last_close"] = df["Close"].shift(1)
+
+    daily_atr = df.map(
+        lambda x: max(x["High"] - x["Low"], abs(x["High"] - x["last_close"]), abs(x["Low"] - x["last_close"]))
+    )
+
+    column_name = "atr"
+    df.loc[:, column_name] = daily_atr.rolling(window=window).mean()
+
+    return df, column_name
+
+
 def add_macd(
         df: pd.DataFrame,
         fast_length: int = 12,

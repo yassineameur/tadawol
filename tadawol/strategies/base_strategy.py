@@ -96,7 +96,7 @@ class BaseStrategy(ABC):
             data.append(ticker_exits)
 
             current_tickers_number += 1
-            if current_tickers_number % 200 == 0:
+            if current_tickers_number % 20 == 0:
                 logger.info(f"Simulation in progress : {round(100 * current_tickers_number / tickers_number)}%")
 
         if len(data) == 0:

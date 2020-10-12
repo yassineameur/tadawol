@@ -1,5 +1,6 @@
 from typing import Set, Dict, Optional, List
 import os
+import time
 from datetime import datetime, timedelta
 import logging
 
@@ -10,14 +11,14 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-DEFAULT_START_DATE = datetime(2010, 1, 15)
+DEFAULT_START_DATE = datetime(2015, 1, 1)
 DATA_PATH = os.path.join(os.getcwd(), 'tadawol/data')
 
 TICKERS_LIST_PATH = os.path.join(DATA_PATH, "tickers_list.csv")
 STOCKS_HISTORY_PATH = os.path.join(DATA_PATH, "history.csv")
 
 
-def get_stock_data(ticker: str, start_date: datetime, end_date: Optional[datetime] = None) -> pd.DataFrame:
+def get_ticker_data(ticker: str, start_date: datetime, end_date: Optional[datetime] = None) -> pd.DataFrame:
     if end_date is None:
         end_date = datetime.utcnow() - timedelta(days=1)
 
@@ -42,7 +43,7 @@ def get_tickers() -> Set[str]:
 def get_historical_data() -> pd.DataFrame:
     df = pd.read_csv(STOCKS_HISTORY_PATH)
     df.loc[:, 'Date'] = pd.to_datetime(df['Date'], format="%Y-%m-%d")
-    df = df[df["Date"] > datetime(2016, 6, 1)]
+    df = df[df["Date"] > DEFAULT_START_DATE]
     logger.info("Historical data is extracted, rows_umber = {}".format(df.shape[0]))
     return df
 
@@ -94,7 +95,7 @@ def update_data(tickers_to_update: Optional[List[str]] = None, save_data: bool =
             end_date = None
             if not save_data:
                 end_date = (datetime.now() + timedelta(days=1)).date()
-            ticker_data = get_stock_data(ticker, start_date, end_date)
+            ticker_data = get_ticker_data(ticker, start_date, end_date)
         except KeyboardInterrupt as e:
             logging.info('Interrupted by user')
             raise e
@@ -125,6 +126,26 @@ def update_data(tickers_to_update: Optional[List[str]] = None, save_data: bool =
     return pd.concat(added_data, axis=0)
 
 
+def update_tickers_from_scratch():
+    tickers_number = 750
+    tickers_list = get_top_tickers(0, tickers_number)
+    i = 0
+    tickers_number = len(tickers_list)
+    for ticker in tickers_list:
+        try:
+            ticker_data = get_ticker_data(ticker=ticker, start_date=DEFAULT_START_DATE)
+            ticker_data.to_csv(STOCKS_HISTORY_PATH, mode='a', header=False)
+        except KeyboardInterrupt:
+            raise KeyboardInterrupt()
+        except:
+            logger.error("Fail for ticker {}".format(ticker))
+
+        i += 1
+        if i % 20 == 0:
+            print("{}/{}".format(i, tickers_number))
+            time.sleep(2)
+
+
 def get_fresh_data(tickers_to_update: List[str], past_days: int = 90):
 
     logger.info("Fetching data for {} tickers".format(len(tickers_to_update)))
@@ -138,7 +159,7 @@ def get_fresh_data(tickers_to_update: List[str], past_days: int = 90):
     for ticker in tickers_to_update:
         try:
             current_tickers_number += 1
-            ticker_data = get_stock_data(ticker, start_date, end_date)
+            ticker_data = get_ticker_data(ticker, start_date, end_date)
         except KeyboardInterrupt as e:
             logging.info('Interrupted by user')
             raise e
@@ -228,11 +249,4 @@ def get_top_tickers(start, end):
     df.reset_index(drop=True, inplace=True)
     df = df.loc[start: end, ]
     return list(df["Ticker"])
-
-
-if __name__ == '__main__':
-    data = get_historical_data()
-    data = data[data["Ticker"] == "ACI"]
-    data = data[data["Date"] > datetime(2017, 5, 1)]
-    print(data.head(30))
 
