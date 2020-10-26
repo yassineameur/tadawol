@@ -43,7 +43,7 @@ def get_tickers() -> Set[str]:
 def get_historical_data() -> pd.DataFrame:
     df = pd.read_csv(STOCKS_HISTORY_PATH)
     df.loc[:, 'Date'] = pd.to_datetime(df['Date'], format="%Y-%m-%d")
-    df = df[df["Date"] > DEFAULT_START_DATE]
+    df = df[df["Date"] > datetime(2017, 1, 1)]
     logger.info("Historical data is extracted, rows_umber = {}".format(df.shape[0]))
     return df
 

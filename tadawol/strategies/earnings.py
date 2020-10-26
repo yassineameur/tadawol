@@ -1,3 +1,4 @@
+from typing import List
 import pandas as pd
 
 from ..strategies import base_strategy
@@ -16,6 +17,11 @@ class Earnings(base_strategy.BaseStrategy):
             max_win_percent: int = 15,
             max_keep_days: int = 15
     ):
+        super().__init__(
+            max_lose_percent=max_lose_percent,
+            max_win_percent=max_win_percent,
+            max_keep_days=max_keep_days,
+        )
 
         self.short_window = short_window
         self.long_window = long_window
@@ -24,11 +30,7 @@ class Earnings(base_strategy.BaseStrategy):
         self.earnings_df = earnings.get_earnings_df()
         self.earnings_df.rename(columns={"ticker": "Ticker"}, inplace=True)
 
-        super().__init__(
-            max_lose_percent=max_lose_percent,
-            max_win_percent=max_win_percent,
-            max_keep_days=max_keep_days,
-        )
+        self.name = "Earnings"
 
     def add_entries_for_ticker(self, ticker_data: pd.DataFrame, **kwargs):
         ticker_data = ticker_data.copy(deep=True)
@@ -78,3 +80,7 @@ class Earnings(base_strategy.BaseStrategy):
             [15],
             [7, 10, 15]
         ]
+
+    @staticmethod
+    def get_hint_columns() -> List[str]:
+        return []

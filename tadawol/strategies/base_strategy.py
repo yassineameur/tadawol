@@ -2,7 +2,11 @@ from abc import ABC, abstractmethod
 from math import inf
 from typing import List, Any, Type, Optional
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
+
+from click import progressbar
+
+from ..simulator import simulate_trades
 
 
 import pandas as pd
@@ -22,6 +26,7 @@ class BaseStrategy(ABC):
         self.max_win_percent = max_win_percent
         self.max_keep_days = max_keep_days
         self.logger = logger
+        self.name = "abstract"
 
     @abstractmethod
     def add_entries_for_ticker(self, ticker_data: pd.DataFrame):
@@ -30,6 +35,11 @@ class BaseStrategy(ABC):
     @staticmethod
     @abstractmethod
     def get_grid() -> List[Any]:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def get_hint_columns() -> List[str]:
         pass
 
     def get_exit_prices_for_ticker(self, df: pd.DataFrame):
@@ -52,7 +62,7 @@ class BaseStrategy(ABC):
             day_close = -1
             close = row["Close"]
 
-            for day in range(1, self.max_keep_days):
+            for day in range(1, self.max_keep_days + 1):
                 day_close = row[f"Close_{day}"]
                 day_open = row[f"Open_{day}"]
                 day_date = row[f"Date_{day}"]
@@ -107,7 +117,7 @@ class BaseStrategy(ABC):
         df.loc[:, "win_percent"] = 100 * (df["exit_price"] - df["Close"]) / df["Close"]
         df = clean_results(df)
         df = get_last_week_entries(df)
-        return df[df["week_previous_entries"] >= 0]
+        return df
 
     def simulate(self, tickers_to_simulate: Optional[List[str]] = None):
         df = get_historical_data()
@@ -129,26 +139,34 @@ def get_best_config(strategy: Type[BaseStrategy]):
     grid = strategy.get_grid()
     search_grid = get_search_grid(grid)
 
-    tickers = get_top_tickers(0, 300)
+    tickers = get_top_tickers(100, 300)
 
     best_win = -inf
+    best_win_percent = 0
     best_combination = None
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.ERROR)
     simulations_number = len(search_grid)
     i = 1
-    for combination in search_grid:
-        r = strategy(*combination)
-        res = r.simulate(tickers)
-        current_win = round(100 * res[res["win_percent"] > 0].shape[0] / res.shape[0], 2)
-        if current_win > best_win:
-            best_win = current_win
-            best_combination = combination
 
-        print(f" Simulation : {i}/{simulations_number}: Current best combination = ", best_combination)
-        print(f" Simulation : {i}/{simulations_number}:Current best win = ", best_win)
-        print("-----------------------------------------------------")
+    with progressbar(search_grid) as combinations:
 
-        i += 1
+        for combination in combinations:
+            r = strategy(*combination)
+            res = r.simulate(tickers)
+            current_win, _, _ = simulate_trades(res)
+            win_percent = round(100 * res[res["win_percent"] > 0].shape[0] / res.shape[0], 2)
+            if current_win > best_win:
+                best_win = current_win
+                best_win_percent = win_percent
+                best_combination = combination
 
-    print("Best combination = ", best_combination)
-    print("Best win = ", best_win)
+            print(f" Simulation : {i}/{simulations_number}: Best combination = ", best_combination)
+            print(f" Simulation : {i}/{simulations_number}:Best win = ", best_win)
+            print(f" Simulation : {i}/{simulations_number}:Best win %= ", best_win_percent)
+            print("-----------------------------------------------------")
+
+            i += 1
+
+        print("Best combination = ", best_combination)
+        print("Best win = ", best_win)
+        print("Best win % = ", best_win_percent)
