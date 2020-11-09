@@ -57,7 +57,7 @@ def add_macd(
     return df, column_name
 
 
-def add_rsi(df: pd.DataFrame, window: int = 14, column: str = "Close", smooth: int = 5) -> Tuple[pd.DataFrame, str]:
+def add_rsi(df: pd.DataFrame, window: int = 14, column: str = "Close") -> Tuple[pd.DataFrame, str]:
 
     df.loc[:, "last_value"] = df[column].shift(1)
     win_lose = 100 * (df[column] - df["last_value"])
@@ -74,3 +74,53 @@ def add_rsi(df: pd.DataFrame, window: int = 14, column: str = "Close", smooth: i
     )
 
     return df, column_name
+
+
+def add_bollinger_bands(df: pd.DataFrame, window: int = 20) -> Tuple[pd.DataFrame, str, str]:
+
+    typical_price_col = "typical_price"
+    df.loc[:, typical_price_col] = df.apply(lambda x: (x["High"] + x["Low"] + x["Close"])/3.0, axis=1)
+
+    df, tp_ma = add_sma(df, window=window, column=typical_price_col)
+
+    intermediate_df = df[[typical_price_col, tp_ma]]
+    for i in range(0, window):
+        intermediate_df.loc[:, f"{typical_price_col}_{i}"] = df[tp_ma].shift(i)
+
+    from math import pow
+
+    def get_variance(x):
+        var = 0
+        for i in range(window):
+            var += pow((x[tp_ma] - x[f"{typical_price_col}_{i}"]), 2)/window
+        return pow(var, 0.5)
+
+    df.loc[:, "variance"] = intermediate_df.apply(get_variance, axis=1)
+
+    df.loc[:, "low_bb"] = df[typical_price_col] - 2 * df["variance"]
+    df.loc[:, "high_bb"] = df[typical_price_col] + 2 * df["variance"]
+
+    return df, "low_bb", "high_bb"
+
+
+if __name__ == "__main__":
+    from tadawol.history import get_historical_data
+
+    df = get_historical_data()
+    df = df[df["Ticker"] == "AMZN"]
+    print("here")
+    df, _, _ = add_bollinger_bands(df, window=20)
+    print(df.tail(20)[["Date", "Close", "typical_price", "typical_price_sma_20", "variance", "low_bb", "high_bb"]])
+
+    """
+    tail = df.tail(20)[["typical_price"]].var()
+    print("****")
+    print(tail)
+
+    d = {'username': ['Alice', 'Bob', 'Carl'],
+         'age': [18, 22, 43],
+         'income': [0, 5, 16]}
+    df = pd.DataFrame(d)
+
+    print(df.std())
+    """

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from tasks import execute_macd, execute_earnings, execute_reverse
+from tasks import execute_macd_reverse_strategies
 
 
 app = FastAPI()
@@ -10,37 +10,13 @@ async def root():
     return {"status": "up"}
 
 
-@app.get("/macd")
-async def macd(
+@app.get("/macd_and_reverse")
+async def macd_reverse(
         min_top_ticker: int = 0,
         max_top_ticker: int = 500
 ):
-    execute_macd.delay(
+    execute_macd_reverse_strategies.delay(
         min_top_ticker=min_top_ticker,
         max_top_ticker=max_top_ticker,
     )
-    return {"message": "Strategy will be executed, results will be sent by email !"}
-
-
-@app.get("/reverse")
-async def reverse(
-        min_top_ticker: int = 0,
-        max_top_ticker: int = 500
-):
-    execute_reverse.delay(
-        min_top_ticker=min_top_ticker,
-        max_top_ticker=max_top_ticker,
-    )
-    return {"message": "Strategy will be executed, results will be sent by email !"}
-
-
-@app.get("/earnings")
-async def earnings(
-        min_top_ticker: int = 0,
-        max_top_ticker: int = 500,
-):
-    execute_earnings.delay(
-        min_top_ticker=min_top_ticker,
-        max_top_ticker=max_top_ticker,
-    )
-    return {"message": "Strategy will be executed, results will be sent by email !"}
+    return {"message": "Strategies will be executed, results will be sent by email !"}

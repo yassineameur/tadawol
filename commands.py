@@ -1,4 +1,4 @@
-from tadawol.history import update_data, check_data as check_history_data
+from tadawol.history import update_data, check_data as check_history_data, update_tickers_from_scratch
 from tadawol.earnings import update_data as update_earnings, check_data as check_earnings_data
 from tadawol.strategies.base_strategy import get_best_config
 from tadawol.strategies.reverse import Reverse
@@ -13,7 +13,7 @@ def cli():
 
 @cli.command("update_history")
 def update():
-    update_data(None)
+    update_tickers_from_scratch()
 
 
 @cli.command("update_earnings")

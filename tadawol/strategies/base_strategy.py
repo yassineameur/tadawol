@@ -11,7 +11,7 @@ from ..simulator import simulate_trades
 
 import pandas as pd
 
-from ..history import get_historical_data, get_fresh_data, get_top_tickers
+from ..history import get_historical_data, get_top_tickers
 from ..utils import get_last_week_entries, clean_results, get_search_grid
 
 logger = logging.getLogger(__name__)
@@ -124,15 +124,47 @@ class BaseStrategy(ABC):
         trades = self._get_trades(df, tickers_to_simulate)
         return trades[trades['exit_price'].notna()]
 
-    def get_today_trades_and_exits(self, tickers: Optional[List[str]] = None):
-        df = get_fresh_data(tickers)
+    def add_entry_hints(self, df: pd.DataFrame):
 
+        if df.empty:
+            return df
+
+        df.loc[:, "max_lose"] = df["Close"].map(lambda x: x * (100 - self.max_lose_percent) / 100)
+        df.loc[:, "invest"] = df["week_previous_entries"].map(lambda x: 2500 if x >= 1 else 1800)
+
+        def get_shares_number(x):
+            return round(x["invest"]/x["Close"])
+
+        df.loc[:, "shares_number"] = df.apply(get_shares_number, axis=1)
+
+        return df
+
+    def get_today_trades_and_exits(self, df: pd.DataFrame):
+
+        assert "Ticker" in list(df.columns)
+        assert "Close" in list(df.columns)
+        assert "Date" in list(df.columns)
         trades = self._get_trades(df)
         today = (datetime.now()).date()
         today_date = datetime(today.year, today.month, today.day)
+        #today_date = datetime(2020, 11, 3)
         today_trades = trades[trades["Date"] == today_date]
         today_exits = trades[trades["exit"] == today_date]
-        return today_trades, today_exits
+        trades_columns = [
+            "Date", "Ticker", "Close", "week_previous_entries", "exit_reason"
+        ]
+
+        if not today_trades.empty:
+            hint_columns = self.get_hint_columns()
+            if hint_columns:
+                today_trades.sort_values(by=hint_columns, ascending=False)
+                for col in hint_columns:
+                    trades_columns.append(col)
+
+            today_trades = self.add_entry_hints(today_trades)
+            trades_columns.extend(["max_lose", "invest", "shares_number"])
+
+        return today_trades[trades_columns], today_exits
 
 
 def get_best_config(strategy: Type[BaseStrategy]):

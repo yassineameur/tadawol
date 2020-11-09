@@ -155,10 +155,9 @@ def get_fresh_data(tickers_to_update: List[str], past_days: int = 90):
     start_date = (datetime.now() - timedelta(days=past_days)).date()
     end_date = (datetime.now() + timedelta(days=1)).date()
 
-    current_tickers_number = 0
-    for ticker in tickers_to_update:
+    tickers_print_range = round(len(tickers_to_update) / 20)
+    for current_index, ticker in enumerate(tickers_to_update):
         try:
-            current_tickers_number += 1
             ticker_data = get_ticker_data(ticker, start_date, end_date)
         except KeyboardInterrupt as e:
             logging.info('Interrupted by user')
@@ -170,10 +169,10 @@ def get_fresh_data(tickers_to_update: List[str], past_days: int = 90):
             if ticker_data.shape[0] > 0:
                 data.append(ticker_data)
         finally:
-            if current_tickers_number % 10 == 0:
+            if current_index % tickers_print_range == 0:
                 logger.info(
                     'Treated {}% of tickers'.format(
-                        round(100 * current_tickers_number/len(tickers_to_update))
+                        round(100 * current_index/len(tickers_to_update))
                     )
                 )
 
