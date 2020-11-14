@@ -47,6 +47,11 @@ def execute_macd_reverse_strategies(
     for strategy in strategies:
         try:
             today_trades, today_exits = strategy.get_today_trades_and_exits(df.copy(deep=True))
-            _send_entry_and_exit(today_trades, today_exits, strategy)
+            logger.info("****************** RESULTS **********************")
+            logger.info("****************** ENTRIES **********************")
+            logger.info(today_trades)
+            logger.info("****************** EXITS *************************")
+            logger.info(today_trades)
+            #_send_entry_and_exit(today_trades, today_exits, strategy)
         except KeyboardInterrupt as k_e:
             raise KeyboardInterrupt from k_e
