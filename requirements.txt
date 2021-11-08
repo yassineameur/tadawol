@@ -93,7 +93,7 @@ sendgrid==6.4.6
 simplejson==3.17.2
 six==1.15.0
 smtpapi==0.4.5
-starkbank-ecdsa==1.1.0
+starkbank-ecdsa==2.0.1
 starlette==0.13.6
 terminado==0.8.3
 testpath==0.4.4
